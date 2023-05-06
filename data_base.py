@@ -41,17 +41,18 @@ class DataBase(object):
         else:
             return self.date_vec[sn + 1]
 
-    def load_next_data(self, curr_date, time, id):
-        next_date = self.get_next_date(curr_date)
-        self.fill_data_cache([curr_date, next_date])
-        curr_tick_df = self.data_cache[curr_date]
-        line_sn = curr_tick_df[(curr_tick_df.date == curr_date) & (curr_tick_df.time == time) & (curr_tick_df.id == id)].index.tolist()[-1]
+    def load_next_data(self, curr_day, time, id):
+        next_day = self.get_next_date(curr_day)
+        self.fill_data_cache([curr_day, next_day])
+        curr_tick_df = self.data_cache[curr_day]
+        line_sn = curr_tick_df[(curr_tick_df.date == curr_day) & (curr_tick_df.time == time) & (curr_tick_df.id == id)].index.tolist()[-1]
         next_data = curr_tick_df[curr_tick_df.index >= line_sn]
         ticks_cnt = len(next_data[next_data.id == id])
         if ticks_cnt < self.param.next_tick_cnt:
             next_data = next_data.copy()
-            next_data = next_data.
-        print('OK')
+            if next_day in self.data_cache.keys():
+                next_day_data = self.data_cache[next_day]
+                next_data = next_data.append(next_day_data)
         return next_data
 
 
@@ -119,7 +120,6 @@ class DataBase(object):
             else:
                 df = df.append(one_df)
 
-        print(df.shape)
         return df
 
     def pick_signals(self, df):
