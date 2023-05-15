@@ -70,6 +70,7 @@ class FeatureLoader(object):
         prev_low = one_signal.low
         curr = one_signal.curr
 
+        features['curr'] = curr
         features['curr_inc'] = (curr / prev_low - 1) * 100.0
         features['curr_dec'] = (curr / prev_high - 1) * 100.0
         return
