@@ -62,6 +62,7 @@ class FeatureLoader(object):
     def load_next_features(self, features, one_signal):
         curr_ins_next_data, all_ins_next_data = self.get_next_data(one_signal)
         features['next_10_mins_inc'] = self.algorithm.next_10_min_inc(curr_ins_next_data)
+        features['first_raise_or_drop'] = self.algorithm.first_raise_or_drop(curr_ins_next_data, ths = 1.0)
         return
 
     def load_curr_features(self, features, one_signal):

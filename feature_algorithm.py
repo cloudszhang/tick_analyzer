@@ -1,4 +1,5 @@
 #encoding=utf-8
+import numpy as np
 
 class FeatureAlgorithm(object):
     def __init__(self):
@@ -23,3 +24,38 @@ class FeatureAlgorithm(object):
         inc = (tick_10min.bid1 /tick_curr.bid1 - 1) * 100
         return inc
 
+    #后续走势先上张到1%,还是先下跌到1%
+    def first_raise_or_drop(self,df, ths = 1.0):
+        tick_curr = df.iloc[0]
+
+        price_curr = tick_curr.bid1
+        if price_curr < 0.1:
+            return np.nan
+
+        df = df.copy()
+        df = df[df.bid1 > 0]
+        df.index = np.arange(len(df))
+        df['inc'] = df.bid1 - price_curr
+        inc_ths = price_curr * ths / 100.0
+
+        inc_df = df[df.inc > inc_ths]
+        dec_df = df[df.inc < -inc_ths]
+
+        if len(inc_df) == 0 and len(dec_df) == 0:
+            return np.nan
+            return
+        if len(inc_df) > 0 and len(dec_df) == 0:
+            return 1.0
+
+        if len(inc_df) == 0 and len(dec_df) > 0:
+            return -1.0
+        else:
+            inc_sn = inc_df.index[0]
+            dec_sn = dec_df.index[0]
+            if inc_sn < dec_sn:
+                return 1.0
+            else:
+                return -1.0
+
+
+        return 0
