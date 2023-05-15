@@ -47,6 +47,21 @@ class FeatureLoader(object):
 
         curr_ins_data = curr_ins_data.iloc[:self.param.next_tick_cnt].copy()
         return curr_ins_data, all_ins_data
+
+    def get_prev_data(self, one_signal):
+        curr_data = self.db.load_prev_data(one_signal.date, one_signal.time, one_signal.id).copy()
+        curr_data.index = np.arange(len(curr_data))
+        curr_ins_data = curr_data[curr_data.id == one_signal.id]
+        if len(curr_ins_data) > self.param.prev_tick_cnt:
+            sn = len(curr_ins_data) - self.param.prev_tick_cnt
+            start_pos = curr_ins_data.iloc[sn].name
+            all_ins_data = curr_data.loc[start_pos:]
+        else:
+            all_ins_data = curr_data
+
+        curr_ins_data = all_ins_data[all_ins_data.id == one_signal.id].copy()
+        return curr_ins_data, all_ins_data
+
     def load_one_feature(self, one_signal):
         features = dict()
         features['ins'] = one_signal.ins
@@ -70,12 +85,17 @@ class FeatureLoader(object):
         prev_low = one_signal.low
         curr = one_signal.curr
 
+
         features['curr'] = curr
         features['curr_inc'] = (curr / prev_low - 1) * 100.0
         features['curr_dec'] = (curr / prev_high - 1) * 100.0
         return
 
     def load_prev_features(self, features, one_signal):
+        prev_data, all_prev_data = self.get_prev_data(one_signal)
+
+        features['inc_ratio'] = self.algorithm.prev_inc_ratio(prev_data)
+
         return
 
 if __name__ == '__main__':

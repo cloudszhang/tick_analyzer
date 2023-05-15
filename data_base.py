@@ -41,6 +41,13 @@ class DataBase(object):
         else:
             return self.date_vec[sn + 1]
 
+    def get_prev_date(self, curr_date):
+        sn = self.date_vec.index(curr_date)
+        if (sn - 1) <= 0:
+            return None
+        else:
+            return self.date_vec[sn - 1]
+
     def load_next_data(self, curr_day, time, id):
         next_day = self.get_next_date(curr_day)
         self.fill_data_cache([curr_day, next_day])
@@ -55,6 +62,19 @@ class DataBase(object):
                 next_data = next_data.append(next_day_data)
         return next_data
 
+    def load_prev_data(self, curr_day, time, id):
+        prev_day = self.get_prev_date(curr_day)
+        self.fill_data_cache([curr_day, prev_day])
+        curr_tick_df = self.data_cache[curr_day]
+        line_sn = curr_tick_df[(curr_tick_df.date == curr_day) & (curr_tick_df.time == time) & (curr_tick_df.id == id)].index.tolist()[-1]
+        curr_data = curr_tick_df[curr_tick_df.index <= line_sn]
+        ticks_cnt = len(curr_data[curr_data.id == id])
+        if ticks_cnt < self.param.next_tick_cnt:
+            curr_data = curr_data.copy()
+            if prev_day in self.data_cache.keys():
+                prev_day_data = self.data_cache[prev_day]
+                curr_data = prev_day_data.append(curr_data)
+        return curr_data
 
     def trim_cache_size(self):
         if len(self.data_cache) > self.cache_size:

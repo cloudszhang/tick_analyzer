@@ -59,3 +59,13 @@ class FeatureAlgorithm(object):
 
 
         return 0
+
+    def prev_inc_ratio(self, prev_df):
+        df = prev_df.copy()
+        curr_tick = df.iloc[-1]
+        curr_tick = self.valid_tick(curr_tick)
+        curr = curr_tick.bid1
+        df['ratio'] = (df.bid1 / curr -1) * 100
+        df['inc'] = df.ratio - df.ratio.iloc[-1]
+
+        return 0
