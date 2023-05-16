@@ -94,6 +94,7 @@ class FeatureLoader(object):
     def load_prev_features(self, features, one_signal):
         prev_data, all_prev_data = self.get_prev_data(one_signal)
 
+        features['inc_speed'] = self.algorithm.prev_inc_speed(prev_data)
         features['inc_ratio'] = self.algorithm.prev_inc_ratio(prev_data)
 
         return
