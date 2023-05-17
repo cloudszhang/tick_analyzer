@@ -80,18 +80,21 @@ class FeatureAlgorithm(object):
         if inc_tick is None:
             if dec_tick is not None:
                 start_tick = dec_tick
+                increase = -1.0
             else:
                 return np.nan
         else:
             if dec_tick is None:
                 start_tick = inc_tick
+                increase = 1.0
             else:
                 inc_sn = inc_tick.name
                 dec_sn = dec_tick.name
                 start_tick = inc_tick if inc_sn > dec_sn else dec_tick
+                increase = 1.0 if inc_sn > dec_sn else -1.0
 
         tick_cnt = curr_tick.name - start_tick.name
-        return tick_cnt
+        return tick_cnt, increase
 
     def recent_slope(self, prev_df):
         df = prev_df.copy()
@@ -119,7 +122,7 @@ class FeatureAlgorithm(object):
         ratio = range / min_bid
 
         return ratio
-    
+
     def prev_flat(self, prev_df):
         df = prev_df.copy()
         df = df[df.bid1 > 0.1]
