@@ -14,15 +14,16 @@ class FeatureAlgorithm(object):
         return tick
 
     #using 10*60*2 ticks, not using minutes, because it is difficult to calc time
-    def next_10_min_inc(self, df):
+    def next_10_min_inc(self, df, min_cnt = 10):
         tick_curr = df.iloc[0]
         tick_curr = self.valid_tick(tick_curr)
 
-        tick_per_10_min = 10 * 60 * 2
+        tick_per_10_min = min_cnt * 60 * 2
         tick_10min = df.iloc[tick_per_10_min] if len(df) > tick_per_10_min else df.iloc[-1]
         tick_10min = self.valid_tick(tick_10min)
         inc = (tick_10min.bid1 /tick_curr.bid1 - 1) * 100
         return inc
+
 
     #后续走势先上张到1%,还是先下跌到1%
     def first_raise_or_drop(self,df, ths = 1.0):
@@ -92,7 +93,7 @@ class FeatureAlgorithm(object):
         tick_cnt = curr_tick.name - start_tick.name
         return tick_cnt
 
-    def prev_inc_ratio(self, prev_df):
+    def recent_slope(self, prev_df):
         df = prev_df.copy()
         df = df[df.bid1 > 0.1]
         min_bid = df.bid1.min()
@@ -107,3 +108,22 @@ class FeatureAlgorithm(object):
 
 
         return inc_ratio
+
+    def recent_amp(self, prev_df):
+        df = prev_df.copy()
+        df = df[df.bid1 > 0.1]
+        min_bid = df.bid1.min()
+        max_bid = df.bid1.max()
+
+        range = max_bid - min_bid
+        ratio = range / min_bid
+
+        return ratio
+    
+    def prev_flat(self, prev_df):
+        df = prev_df.copy()
+        df = df[df.bid1 > 0.1]
+        df.index = np.arange(len(df))
+
+        df['diff_600'] = df.bid1 - df.bid1.shift(600)
+        return 0
