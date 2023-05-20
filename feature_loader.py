@@ -99,6 +99,7 @@ class FeatureLoader(object):
         features['recent_slope'] = self.algorithm.recent_slope(prev_data)
         features['recent_amp'] = self.algorithm.recent_amp(prev_data)
         features['prev_flat'] = self.algorithm.prev_flat(prev_data)
+        features['prev_total_vol'] = self.algorithm.prev_total_vol(one_signal, all_prev_data)
 
         return
 

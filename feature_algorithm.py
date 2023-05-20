@@ -130,3 +130,7 @@ class FeatureAlgorithm(object):
 
         df['diff_600'] = df.bid1 - df.bid1.shift(600)
         return 0
+
+    def prev_total_vol(self, one_signal, all_prev_data):
+        curr_ins_data = all_prev_data[all_prev_data.ins == one_signal.ins]
+        return curr_ins_data.vol.sum()
