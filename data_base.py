@@ -43,7 +43,7 @@ class DataBase(object):
 
     def get_prev_date(self, curr_date):
         sn = self.date_vec.index(curr_date)
-        if (sn - 1) <= 0:
+        if (sn - 1) < 0:
             return None
         else:
             return self.date_vec[sn - 1]
